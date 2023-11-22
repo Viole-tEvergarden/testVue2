@@ -1,17 +1,11 @@
 <template>
-  <div class="block">
-    <span class="demonstration">多选可搜索</span>
-    <CascaderInClickOrder v-model="value" :show-all-levels="false" placeholder="试试搜索：指南" :options="options"
-      :props="{ multiple: true, }" filterable></CascaderInClickOrder>
-    <div>
-      {{ JSON.stringify(value) }}
-    </div>
-  </div>
+  <div ref="bar-3d" class="bar-3d" style="width:100vw;height:100vh"></div>
 </template>
 <script>
-import CascaderInClickOrder from './CascaderInClickOrder.vue'
+import * as echarts from "echarts/lib/echarts"
+
+
 export default {
-  components: { CascaderInClickOrder },
   data() {
     return {
       value: [],
@@ -211,6 +205,150 @@ export default {
         }]
       }]
     };
-  }
+  },
+  mounted () {
+    // 当请求回数据后
+    this.initData(['周一', '周二', '周三', '周四', '周五', '周六'], [100, 50, 70, 80, 60, 40]);
+    console.log(this.value);
+  },
+  methods: {
+    initData(xData, yData) {
+      let bar = echarts.init(this.$refs['bar-3d'])
+      let options = {
+        // 直角坐标系内绘图网格,设置组件距离容器的距离
+        grid: {
+          left: 50,
+          top: 50,
+          right: 50,
+          bottom: 50
+        },
+        // 设置鼠标移入的提示，默认显示
+        tooltip: {},
+        // 设置图例
+        legend: {
+          textStyle: {
+            color: '#999'
+          }
+        },
+        // 设置x轴
+        xAxis: {
+          data: [],
+          // 显示x轴
+          axisLine: {
+            show: true
+          },
+          // 设置x轴的颜色和偏移量
+          axisLabel: {
+            color: '#999',
+            rotate: 0
+          },
+          // 不显示x轴刻度
+          axisTick: {
+            show: false
+          }
+        },
+        // 设置y轴
+        yAxis: {
+          // 显示y轴
+          axisLine: {
+            show: true
+          },
+          // 设置y轴的颜色
+          axisLabel: {
+            color: '#999',
+          },
+          // 不显示y轴刻度
+          axisTick: {
+            show: false
+          },
+          // 不显示分隔线
+          splitLine: {
+            show: false
+          }
+        },
+        // 表示不同系列的列表
+        series: []
+      }
+      // 设置顶部和底部的值
+      let symbolData = [], newShadowHight = []
+      let heights = 0
+      yData.forEach(item => {
+        symbolData.push(1)
+        heights += item
+      })
+      newShadowHight = yData.map(item => heights)
+      options.xAxis.data = xData
+      options.series = [
+        // 底部
+        {
+          z: 2,
+          type: 'pictorialBar',
+          symbol: 'diamond',
+          symbolOffset: ['0%', '50%'],
+          symbolSize: [30, 12],
+          toolltip: {
+            show: false
+          },
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#1f7eff' }, { offset: 1, color: '#64adff' }])
+          },
+          data: symbolData, // [1,1,1,1,1]
+        },
+        // 内容区域
+        {
+          z: 1,
+          type: 'bar',
+          barWidth: 30,
+          data: yData
+        },
+        // 内容的顶部
+        {
+          z: 3,
+          type: 'pictorialBar',
+          symbol: 'diamond',
+          symbolPosition: 'end',
+          symbolOffset: ['0%', '-50%'],
+          symbolSize: [30, 12],
+          toolltip: {
+            show: false
+          },
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#1f7eff' }, { offset: 1, color: '#64adff' }])
+          },
+          data: yData,
+        },
+        // 阴影区域
+        {
+          z: 0,
+          type: 'bar',
+          barWidth: 30,
+          data: newShadowHight,  // [400, 400, 400, 400, 400]
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#9cc1ff' }, { offset: 1, color: '#ecf5ff' }])
+          }
+        },
+        // 阴影的顶部
+        {
+          z: 3,
+          type: 'pictorialBar',
+          symbol: 'diamond',
+          symbolPosition: 'end',
+          symbolOffset: ['0%', '-50%'],
+          symbolSize: [30, 12],
+          toolltip: {
+            show: false
+          },
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{ offset: 0, color: '#1f7eff' }, { offset: 1, color: '#64adff' }])
+          },
+          data: newShadowHight,
+        }
+      ]
+
+      // 设置配置项
+      bar.setOption(options)
+    }
+
+  },
 };
 </script>

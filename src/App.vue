@@ -9,8 +9,10 @@
 // 我如何在此处获取到 count ?
 export default {
   name: 'App',
-  data: {
-    count: 0
+  data(){
+    return{
+      count:0
+    }
   }
 }
 </script>

@@ -35,5 +35,20 @@ export default new Router({
       name: 'cancelAjax',
       component: () => import('@/pages/cancelAjax')
     },
+    {
+      path: '/TrendsRankList',
+      name: 'TrendsRankList',
+      component: () => import('@/pages/echartsPage/TrendsRankList')
+    },
+    {
+      path: '/CustomItem',
+      name: 'CustomItem',
+      component: () => import('@/pages/echartsPage/CustomItem')
+    },
+    {
+      path: '/RightxAxisBar',
+      name: 'RightxAxisBar',
+      component: () => import('@/pages/echartsPage/RightxAxisBar')
+    },
   ]
 })
